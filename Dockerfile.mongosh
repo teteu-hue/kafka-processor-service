@@ -1,0 +1,15 @@
+FROM mongo:latest
+
+# Instalar dependências
+RUN apt-get update && apt-get install -y wget gnupg curl
+
+# Baixar e instalar mongosh
+RUN curl -fsSL https://downloads.mongodb.com/compass/mongosh-1.10.6-linux-x64.tgz -o mongosh.tgz && \
+    tar -xzf mongosh.tgz && \
+    cp mongosh-*/bin/mongosh /usr/local/bin/mongosh && \
+    chmod +x /usr/local/bin/mongosh && \
+    rm -rf mongosh.tgz mongosh-*
+
+# Manter as configurações originais
+EXPOSE 27017
+CMD ["mongod"]

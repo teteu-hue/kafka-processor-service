@@ -1,0 +1,31 @@
+{
+  "name": "kafka-processor-service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "ts-node-dev --inspect --respawn --transpile-only --ignore-watch node_modules src/index.ts",
+    "build": "yarn tsc",
+    "test": "jest"
+  },
+  "dependencies": {
+    "axios": "^1.9.0",
+    "cron": "^4.3.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "kafkajs": "^2.2.4",
+    "mongoose": "^8.13.2",
+    "winston": "^3.17.0",
+    "winston-mongodb": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.9.36",
+    "@types/cron": "^2.0.1",
+    "@types/express": "^5.0.1",
+    "@types/jest": "^29.5.14",
+    "jest": "^30.0.0",
+    "ts-jest": "^29.4.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3"
+  }
+}
