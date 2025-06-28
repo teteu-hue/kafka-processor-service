@@ -1,17 +1,13 @@
-import { producerJob } from './cron/producerCron';
-import HelloWorldController from './controller/HelloWorldController';
-import { route, app } from './server';
-import orderRouter from './router/orders.router';
-import ConsumerService from './services/kafka/services/ConsumerService';
-import { OrderRepository } from './repository/OrderRepository';
-import webhookRouter from './router/webhook.router';
-import { OrderProcessRepository } from './model/orderProcess/OrderProcessRepository';
+import { app } from './server';
+import orderRouter from './domains/orders/router/orders.router';
+import OrderConsumerService from './infra/kafka/services/OrderConsumerService';
+import { OrderRepository } from './domains/orders/repository/OrderRepository';
+import webhookRouter from './domains/orders/router/webhook.router';
+import { OrderProcessRepository } from './domains/orders/repository/OrderProcessRepository';
 
-route.get('/', HelloWorldController.index);
 app.use(orderRouter);
 app.use(webhookRouter);
 
 app.listen(3000, () => {
-    producerJob.start();
-    new ConsumerService(new OrderRepository, new OrderProcessRepository).ConsumeMessage('my-group', ['orders']).catch(e => console.error(`Error in consumer`));
+    new OrderConsumerService(new OrderRepository, new OrderProcessRepository).ConsumeMessage('my-group', ['orders']).catch(e => console.error(`Error in consumer`));
 });

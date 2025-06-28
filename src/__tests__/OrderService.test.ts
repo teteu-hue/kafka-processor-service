@@ -1,4 +1,4 @@
-import OrderService from '../services/OrderService';
+import OrderService from '../domains/orders/services/OrderService';
 import { OrderRepository } from '../repository/OrderRepository';
 import { OrderProcessRepository } from '../model/orderProcess/OrderProcessRepository';
 import kafkaMessageDispatcher from '../services/kafka/KafkaMessageDispatcher';

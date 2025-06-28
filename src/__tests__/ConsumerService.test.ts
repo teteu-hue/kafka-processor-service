@@ -1,9 +1,9 @@
 import ConsumerService from '../services/kafka/services/ConsumerService';
-import { OrderRepository } from '../repository/OrderRepository';
-import { OrderProcessRepository } from '../model/orderProcess/OrderProcessRepository';
+import { OrderRepository } from '../domains/orders/repository/OrderRepository';
+import { OrderProcessRepository } from '../domains/orders/repository/OrderProcessRepository';
 
-jest.mock('../repository/OrderRepository');
-jest.mock('../model/orderProcess/OrderProcessRepository');
+jest.mock('../domains/orders/repository/OrderRepository');
+jest.mock('../domains/orders/repository/OrderProcessRepository');
 jest.mock('../services/kafka/Consumer/ConsumerConfig', () => ({
   createConsumer: jest.fn().mockResolvedValue({
     run: jest.fn().mockResolvedValue(true)

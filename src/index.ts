@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 import { openConnection } from './database/mongodb';
-import { Log } from './logger/Log';
+import { Log } from './shared/logger/Log';
 
 async function startApp() {
 

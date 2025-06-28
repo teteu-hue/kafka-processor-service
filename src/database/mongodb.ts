@@ -1,4 +1,4 @@
-import { Log } from '../logger/Log';
+import { Log } from '../shared/logger/Log';
 import 'dotenv/config';
 import mongoose from 'mongoose';
 
