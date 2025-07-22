@@ -10,6 +10,12 @@ RUN curl -fsSL https://downloads.mongodb.com/compass/mongosh-1.10.6-linux-x64.tg
     chmod +x /usr/local/bin/mongosh && \
     rm -rf mongosh.tgz mongosh-*
 
+# Copy the init script into the container
+COPY mongo.sh /docker-entrypoint-initdb.d/
+
+# Ensure the script is executable
+RUN chmod +x /docker-entrypoint-initdb.d/mongo.sh
+
 # Manter as configurações originais
 EXPOSE 27017
 CMD ["mongod"]
