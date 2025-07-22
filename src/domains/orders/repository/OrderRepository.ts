@@ -44,16 +44,15 @@ export class OrderRepository {
         return result.deletedCount === 1;
     }
 
-    insertIfNotExists = async(orderData: Order): Promise<Array<String | Order>> => {
-        const order = await OrderModel.findOne({_id: orderData._id, clientID: orderData.clientID});
+    upsert = async(orderData: Order): Promise<Order> => {
+        const order = await OrderModel.findOne({orderID: orderData.orderID, clientID: orderData.clientID});
 
         if(!order) {
-            const newOrder = await this.create(orderData);
-
-            return ['notExists', newOrder];
+            const createdOrder = await this.create(orderData);
+            return createdOrder;
         }
 
-        return ['exists', order];
+        return order;
     }
 }
 

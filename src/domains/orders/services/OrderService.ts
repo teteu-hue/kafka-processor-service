@@ -14,20 +14,6 @@ class OrderService {
         private orderProcessRepository: OrderProcessRepository
     ) { }
 
-    createOrder = async (order: Order) => {
-        try {
-            const createdOrder = await this.orderRepository.create(order);
-
-            if (!createdOrder) {
-                return false;
-            }
-
-            return createdOrder;
-        } catch (e) {
-            throw new Error(e instanceof Error ? e.message : 'Unknown error');
-        }
-    }
-
     produceOrders = async (topicName: string, messages: Message[]) => {
         Log.info("Initialize processing orders from topic in OrderService.processOrders");
         try {
@@ -45,7 +31,14 @@ class OrderService {
                     continue;
                 }
                 
-                const { orderID, clientID, status_order, grossValue, items, created_at } = JSON.parse(JSON.stringify(message.value));
+                const { 
+                    orderID, 
+                    clientID, 
+                    status_order, 
+                    grossValue, 
+                    items, 
+                    created_at 
+                } = JSON.parse(JSON.stringify(message.value));
 
                 await kafkaMessageDispatcher.dispatch(topicName, {
                     ...message,
@@ -59,18 +52,7 @@ class OrderService {
                     process_status_order: ProcessStatus.PENDING
                 };
 
-                // Implementar upsert.
-                const createdOrderProcessStatus = await this.orderProcessRepository.create(orderProcessStatus);
-
-                if(!createdOrderProcessStatus) {
-                    const metaLog: LogMeta = {
-                        action: "OrderService.produceOrders",
-                        createdAt: new Date().toISOString(),
-                        success: false
-                    };
-                    Log.error('Order process status not created in orderService.produceOrders', metaLog);
-                    continue;
-                };
+                await this.orderProcessRepository.upsert(orderProcessStatus);
 
                 const metaLog: LogMeta = {
                     action: 'OrderService.produceOrders',

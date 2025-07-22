@@ -30,14 +30,14 @@ export class OrderProcessRepository {
         }
     }
 
-    insertIfNotExists = async( orderData: OrderProcessStatus): Promise<Array<String | OrderProcessStatus>> => {
-        const orderProcess = await OrderProcessStatusModel.findOne({ _id: orderData._id, orderID: orderData.orderID });
+    upsert = async( orderData: OrderProcessStatus): Promise<void> => {
+        const orderProcess = await OrderProcessStatusModel.findOne({ clientID: orderData?.clientID, orderID: orderData?.orderID });
 
         if(!orderProcess) {
-            const newOrderProcess = await this.create(orderData);
-            return ['notExists', newOrderProcess];
+            await this.create(orderData);
+            return;
         }
 
-        return ['exists', orderProcess];
+        return;
     }
 };

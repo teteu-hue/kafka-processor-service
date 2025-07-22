@@ -80,22 +80,23 @@ export default class OrderConsumerService {
 
               try {
 
-                // Implementar upsert
-                  const createdOrder = await this.orderRepository.create(order);
-                  if(createdOrder) {
+                  const orderData = await this.orderRepository.upsert(order);
+
+                  if(!orderData) {
                     const metaLog: LogMeta = {
                       action: "ConsumerService.ConsumeMessage",
                       createdAt: new Date().toISOString(),
                       success: true,
                       details: {
-                        orderData: order,
+                        orderData: orderData,
                         topic: topic
                       }
                     }
-                    Log.info("Dados persistidos para o banco de dados!", metaLog);
+                    Log.info("Pedido não encontrado, não será processado!", metaLog);
+                    return;
                   }
 
-                  const orderProcess = await this.orderProcessRepository.findByOrderId(createdOrder.orderID);
+                  const orderProcess = await this.orderProcessRepository.findByOrderId(orderData.orderID);
 
                   if(!orderProcess) {
                     const metaLog: LogMeta = {
@@ -111,23 +112,19 @@ export default class OrderConsumerService {
                     return;
                   }
                   
-                  // Já verifico se o status não tem o status de pago, essa validação é desnecessária.
-                  // Implementar uma nova forma.
-                  if(order.status_order === "paid") {
-                    await this.orderProcessRepository.updateStatusToProcessed(orderProcess._id);
-                    const metaLog: LogMeta = {
-                      action: "ConsumerService.ConsumeMessage",
-                      createdAt: new Date().toISOString(),
-                      success: true,
-                      details: {
-                        orderData: orderProcess,
-                        topic: topic
-                      }
+                  await this.orderProcessRepository.updateStatusToProcessed(orderProcess._id);
+                  
+                  const metaLog: LogMeta = {
+                    action: "ConsumerService.ConsumeMessage",
+                    createdAt: new Date().toISOString(),
+                    success: true,
+                    details: {
+                      orderData: orderProcess,
+                      topic: topic
                     }
-                    Log.info("Pedido processado com sucesso!", metaLog);
                   }
 
-
+                  Log.info("Pedido processado com sucesso!", metaLog);
               } catch (err) {
                   const metaLog: LogMeta = {
                     action: "ConsumerService.ConsumeMessage",

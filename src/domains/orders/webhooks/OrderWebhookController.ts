@@ -66,7 +66,6 @@ async function index(req: Request, res: Response) {
       .end();
 
   } catch (error) {
-    console.error(error);
     const metaLog: LogMeta =  {
       action: "OrderController.index", 
       createdAt: new Date().toISOString(),
