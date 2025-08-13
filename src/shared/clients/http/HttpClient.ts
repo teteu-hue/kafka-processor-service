@@ -16,19 +16,19 @@ class HttpClient {
     /**
      * The base URL of the API.
      */
-    private baseUrl: string;
+    protected url: string;
 
     /**
      * The headers of the API.
      * Used to send the headers to the API. 
      */
-    private headers: Record<string, string>;
+    protected headers: Record<string, string>;
 
     /**
      * The data of the API.
      * Used to send the data to the API.
      */
-    private data: string;
+    protected data: Record<string, string>;
 
     /**
      * The methods of the API.
@@ -36,10 +36,10 @@ class HttpClient {
      */
     private methods = ['GET', 'POST', 'PUT', 'DELETE'];
 
-    constructor(baseUrl: string) {
-        this.baseUrl = baseUrl;
+    constructor() {
+        this.url = "";
         this.headers = {};
-        this.data = '';
+        this.data = {};
     }
 
     /**
@@ -51,6 +51,11 @@ class HttpClient {
         this.headers[key] = value;
     }
 
+    setData(data: Record<string, string>) {
+        this.data = data;
+        return JSON.stringify(this.data);
+    }
+
     /**
      * Request a resource from the API.
      * @param url The URL of the resource to request.
@@ -59,7 +64,7 @@ class HttpClient {
      * @param headers The headers to send to the API.
      * @returns The response from API or throws an error if the request fails.
      */
-    async request(method: string, url: string, body: Record<string, string>): Promise<Response | Error> {
+    async request(method: string, data: Record<string, string>): Promise<Response | Error> {
         const methodFinded = this.methods.find(m => m === method.toUpperCase());
 
         if(!methodFinded) {
@@ -79,12 +84,16 @@ class HttpClient {
         }
 
         try {
-
-            const response = await fetch(`${this.baseUrl}/${url}`, {
+            console.log("DATA =>", JSON.stringify(data));
+            const httpClientBody: IHttpClientBody = {
                 method: method,
-                body: JSON.stringify(body),
+                body: JSON.stringify(data),
                 headers: this.headers,
-            });
+            }
+
+            console.log(httpClientBody);
+
+            const response = await fetch(`${this.url}`, httpClientBody);
             return response;
 
         } catch (error) {
@@ -96,15 +105,21 @@ class HttpClient {
                 success: false,
                 details: {
                     method: method,
-                    url: url,
+                    url: this.url,
                     data: this.data,
                     headers: this.headers,
                     error: errorMessage,
                 }
             });
-            throw error;
+            throw errorMessage;
         }
     }
 }   
+
+export interface IHttpClientBody {
+    method: string;
+    body?: string;
+    headers: Record<string, string>;
+}
 
 export default HttpClient;
