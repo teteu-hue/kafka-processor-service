@@ -7,8 +7,8 @@ export interface INotificationMessage {
 }
 
 export enum MESSAGE_LEVEL {
-    success = 'success',
-    info = 'info',
-    warning = 'warning',
-    error = 'error'
+    success = 'Successed!',
+    info = 'INFO',
+    warning = 'WARNING!',
+    error = 'ERROR!'
 }

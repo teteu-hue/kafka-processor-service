@@ -8,21 +8,18 @@ export default class DiscordClient extends HttpClient {
         super();
         this.url = process.env.DISCORD_BASE_URL || "https://discord.com/api/webhooks/1351606675152437269/64zJTyTnmPeirc0t1GxGMEKpq12tA2ukC1kvWMrU5D20RXl_IW6kFnWnP75PNylSbAon";
         this.setHeader('Content-Type', 'application/json');
-        this.message = DiscordMessages.content;
+        this.message = DiscordMessages;
     }
 
-    private message: string;
+    private message: IDiscordMessage;
 
     setData(data: Record<string, string>) {
        return super.setData(data);
     }
 
     async sendMessage() {
-        const data = {
-            "content": this.message
-        };
         try { 
-            const response = await this.request("POST", data);
+            const response = await this.request("POST", this.message);
             console.log(response);
             return response;
         } catch (error) {
@@ -52,17 +49,20 @@ export default class DiscordClient extends HttpClient {
         }
     }
 
-    mountMessage(bindValues: []) {
+    mountMessage(bindValues: Array<string>) {
+        if(bindValues.length > 5) {
+            throw new Error("The number of bind values cannot be greater than 5!");
+        }
         return this.bindDataMessage('?', bindValues);
     }
 
-    private bindDataMessage(operator: string, bindValues: []) {
+    private bindDataMessage(operator: string, bindValues: Array<string>) {
         if(!this.message) {
             throw Error("Message is empty!");
         }
 
         for(let element = 0; element < bindValues.length; element++) {
-            this.message = this.message.replace(operator, bindValues[element]);   
+            this.message.content = this.message.content.replace(operator, bindValues[element]);   
         }
         return this.message;
     }
